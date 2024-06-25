@@ -25,30 +25,30 @@ export class GameManager{
 
     private addHandler(socket: WebSocket) {
        socket.on('message', (data) => {
+       
         const message = JSON.parse(data.toString());
-
         if(message.type === INIT_GAME)
         {if(this.pendingUser) {
          // connect to the pending user and start the game
          const game = new Game(this.pendingUser, socket);
+         
          this.pendingUser = null;
          this.games.push(game);
         }else{
+         
          this.pendingUser = socket;
         }
        }
-
-
        if(message.type === MOVE)
        {
         const game = this.games.find((game) => game.getPlayer1() == socket || game.getPlayer2() == socket);
         
         if(game) {
             game.makeMove(socket, message.move);
+        }else{
+            console.log("You are not connected to anyone")
         }
-
        }
-
      })
     }
 }

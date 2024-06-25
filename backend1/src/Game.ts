@@ -1,11 +1,11 @@
 import { Chess } from "chess.js";
 import { WebSocket } from "ws";
+import { GAME_OVER, INIT_GAME, MOVE } from "./Messages";
 
 export class Game{
     private player1: WebSocket;
     private player2: WebSocket;
-    private board: Chess;
-    // private moves: string[];
+    public board: Chess;
     private startTime: Date;
     
     constructor(player1: WebSocket, player2: WebSocket) {
@@ -13,6 +13,19 @@ export class Game{
         this.player2 = player2;
         this.board = new Chess();
         this.startTime = new Date();
+        this.player1.send(JSON.stringify({
+           type: INIT_GAME,
+           payload: {
+            color: "white"
+           }
+        }))
+
+        this.player2.send(JSON.stringify({
+            type: INIT_GAME,
+            payload: {
+             color: "black"
+            }
+         }))
     }
 
     getPlayer1(): WebSocket {
@@ -23,13 +36,53 @@ export class Game{
         return this.player2;
     }
 
-    makeMove(socket: WebSocket, move: string) {
-       // validation of move
-       //check if the move is of the user or not
-       //make the move
-
-       //update the board
-
-       //send updaed board to both the users
+    makeMove(socket: WebSocket, move: {
+        from: string,
+        to: string
+    }) {
+       
+       
+       if(this.board.history().length % 2 === 0 && socket !== this.player1) {
+        return;
+       }
+       
+       if(this.board.history().length % 2 === 1 && socket !== this.player2) {
+        return;
+       }
+       
+       try {
+         console.log(move)
+         this.board.move(move);
+       } catch (error) {
+          console.log("Error as invalid move")
+          return
+       }
+       
+       if(this.board.isGameOver()) {
+         this.player1.send(JSON.stringify({
+            type: GAME_OVER,
+            payload: {
+                winner: this.board.turn() === "w" ? "BLACK" : "WHITE"
+            }
+         }));
+         this.player2.send(JSON.stringify({
+            type: GAME_OVER,
+            payload: {
+                winner: this.board.turn() === "w" ? "BLACK" : "WHITE"
+            }
+         }));
+       }
+       
+       if(this.board.history().length % 2 !== 0) {
+           this.player2.send(JSON.stringify({
+            type: MOVE,
+            payload: move
+           }))
+       }else{
+           this.player1.send(JSON.stringify({
+            type: MOVE,
+            payload: move
+           }))
+       }
     }
 }

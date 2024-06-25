@@ -31,6 +31,15 @@ class GameManager {
                     this.pendingUser = socket;
                 }
             }
+            if (message.type === Messages_1.MOVE) {
+                const game = this.games.find((game) => game.getPlayer1() == socket || game.getPlayer2() == socket);
+                if (game) {
+                    game.makeMove(socket, message.move);
+                }
+                else {
+                    console.log("You are not connected to anyone");
+                }
+            }
         });
     }
 }
