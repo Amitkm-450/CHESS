@@ -1,15 +1,18 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./components/Home";
-import { Game } from "./components/Game";
+import Landing from "./screen/Landing";
+import Game from "./screen/Game";
 
 
 export default function App() {
   return (
-    <BrowserRouter>
+	<div className="h-screen w-screen bg-slate-900">
+      <BrowserRouter>
 		<Routes>
-			<Route path="/" element={<Home />} />
+			<Route path="/" element={<Landing />} />
 			<Route path="/game" element={<Game />} />
 		</Routes>
-	</BrowserRouter>
+	  </BrowserRouter>
+	</div>
+    
   );
 }
