@@ -1,6 +1,6 @@
 import {WebSocket} from "ws";
 import { Game } from "./Game";
-import { INIT_GAME, MOVE } from "./Messages"
+import { GAME_OVER, INIT_GAME, MOVE } from "./Messages"
 
 export class GameManager{
     private games: Game[];
@@ -44,10 +44,14 @@ export class GameManager{
         const game = this.games.find((game) => game.getPlayer1() == socket || game.getPlayer2() == socket);
         
         if(game) {
-            game.makeMove(socket, message.move);
+            game.makeMove(socket, message.payload.move);
         }else{
             console.log("You are not connected to anyone")
         }
+       }
+
+       if(message.type === GAME_OVER) {
+        console.log("Gaem over")
        }
      })
     }

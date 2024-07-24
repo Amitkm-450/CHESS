@@ -34,11 +34,14 @@ class GameManager {
             if (message.type === Messages_1.MOVE) {
                 const game = this.games.find((game) => game.getPlayer1() == socket || game.getPlayer2() == socket);
                 if (game) {
-                    game.makeMove(socket, message.move);
+                    game.makeMove(socket, message.payload.move);
                 }
                 else {
                     console.log("You are not connected to anyone");
                 }
+            }
+            if (message.type === Messages_1.GAME_OVER) {
+                console.log("Gaem over");
             }
         });
     }
