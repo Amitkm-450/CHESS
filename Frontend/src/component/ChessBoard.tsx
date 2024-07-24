@@ -1,4 +1,4 @@
-import { Chess, Color, PieceSymbol, Square } from "chess.js";
+import {  Color, PieceSymbol, Square } from "chess.js";
 import { useState } from "react";
 import { MOVE } from "../screen/Game";
 

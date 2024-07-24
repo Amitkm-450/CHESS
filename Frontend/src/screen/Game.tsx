@@ -37,6 +37,7 @@ const Game = () => {
           setBoard(chess.board());
           break;
         case GAME_OVER:
+          setChess(new Chess())
           console.log("Game over");
           break;
       }
