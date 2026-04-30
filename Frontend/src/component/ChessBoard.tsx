@@ -2,21 +2,23 @@ import {  Color, PieceSymbol, Square } from "chess.js";
 import { useState } from "react";
 import { MOVE } from "../screen/Game";
 
-const ChessBoard = ({chess, board, socket, setBoard} : {
+const ChessBoard = ({chess, board, socket, setBoard, started, myColor} : {
   chess: any;
   setBoard: any;
   board: ({
   square: Square;
-  type: PieceSymbol; 
+  type: PieceSymbol;
   color: Color;
 } | null)[][],
 
-socket: WebSocket
+socket: WebSocket,
+started: boolean,
+myColor: "white" | "black" | null
 }) => {
-  
+
   const [from, setFrom] = useState<null | string>("");
   // const [to, setTo] = useState<string | null>("")
-  
+
   return (
     <div className="text-white-200">
       {board.map((row, i) => {
@@ -26,7 +28,12 @@ socket: WebSocket
               row.map((square, j) => {
                 const squareRepresentation = String.fromCharCode(97+ (j % 8)) + "" + (8-i) as Square;
                 return <div onClick={() => {
+                  if (!started) return;
                   if(!from) {
+                    if (!myColor) return;
+                    const myColorChar = myColor === "white" ? "w" : "b";
+                    if (chess.turn() !== myColorChar) return;
+                    if (!square || square.color !== myColorChar) return;
                     setFrom(squareRepresentation)
                   } else{
                     

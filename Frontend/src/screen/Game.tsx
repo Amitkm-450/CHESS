@@ -15,6 +15,7 @@ const Game = () => {
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board())
   const [started, setStarted] = useState(false)
+  const [myColor, setMyColor] = useState<"white" | "black" | null>(null)
   
 
   useEffect(() => {
@@ -29,6 +30,7 @@ const Game = () => {
         case INIT_GAME:
           setBoard(chess.board());
           setStarted(true)
+          setMyColor(message.payload.color)
           console.log(INIT_GAME)
           break;
         case MOVE:
@@ -38,6 +40,7 @@ const Game = () => {
           break;
         case GAME_OVER:
           setChess(new Chess())
+          setMyColor(null)
           console.log("Game over");
           break;
       }
@@ -52,7 +55,7 @@ const Game = () => {
         w-full ">
           <div className="col-span-4 
           w-full flex justify-center">
-            <ChessBoard chess={chess} setBoard={setBoard} board = {board} socket={socket}/>
+            <ChessBoard chess={chess} setBoard={setBoard} board={board} socket={socket} started={started} myColor={myColor}/>
           </div>
           <div className="col-span-2  flex justify-center items-center">
             {!started && (<Buttons onClick={() => {
