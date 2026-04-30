@@ -21,6 +21,10 @@ export class GameManager{
     removeUser(socket: WebSocket) {
         this.users = this.users.filter((user: WebSocket) => user !== socket);
 
+        if (this.pendingUser === socket) {
+            this.pendingUser = null;
+        }
+
         const game = this.games.find(
             (g) => g.getPlayer1() === socket || g.getPlayer2() === socket
         );
