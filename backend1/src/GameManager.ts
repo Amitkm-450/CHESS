@@ -47,18 +47,27 @@ export class GameManager{
        socket.on('message', (data) => {
        
         const message = JSON.parse(data.toString());
-        if(message.type === INIT_GAME)
-        {if(this.pendingUser) {
-         // connect to the pending user and start the game
-         const game = new Game(this.pendingUser, socket);
-         
-         this.pendingUser = null;
-         this.games.push(game);
-        }else{
-         
-         this.pendingUser = socket;
+        if (message.type === INIT_GAME) {
+            if (this.pendingUser === socket) {
+                console.log("Ignoring init_game: socket is already waiting");
+                return;
+            }
+            const alreadyInGame = this.games.some(
+                (g) => g.getPlayer1() === socket || g.getPlayer2() === socket
+            );
+            if (alreadyInGame) {
+                console.log("Ignoring init_game: socket is already in a game");
+                return;
+            }
+
+            if (this.pendingUser) {
+                const game = new Game(this.pendingUser, socket);
+                this.pendingUser = null;
+                this.games.push(game);
+            } else {
+                this.pendingUser = socket;
+            }
         }
-       }
        if(message.type === MOVE)
        {
         const game = this.games.find((game) => game.getPlayer1() == socket || game.getPlayer2() == socket);
