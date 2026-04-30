@@ -19,8 +19,24 @@ export class GameManager{
     }
 
     removeUser(socket: WebSocket) {
-       this.users = this.users.filter((user: WebSocket) => user !== socket);
-       //stop the game as the user left
+        this.users = this.users.filter((user: WebSocket) => user !== socket);
+
+        const game = this.games.find(
+            (g) => g.getPlayer1() === socket || g.getPlayer2() === socket
+        );
+        if (game) {
+            const opponent =
+                game.getPlayer1() === socket ? game.getPlayer2() : game.getPlayer1();
+            const winner = game.getPlayer1() === socket ? "BLACK" : "WHITE";
+            try {
+                opponent.send(
+                    JSON.stringify({ type: GAME_OVER, payload: { winner } })
+                );
+            } catch {
+                console.log("Failed to notify opponent — socket likely closed");
+            }
+            this.games = this.games.filter((g) => g !== game);
+        }
     }
 
     private addHandler(socket: WebSocket) {
