@@ -45,8 +45,15 @@ export class GameManager{
 
     private addHandler(socket: WebSocket) {
        socket.on('message', (data) => {
-       
-        const message = JSON.parse(data.toString());
+
+        let message: any;
+        try {
+            message = JSON.parse(data.toString());
+        } catch {
+            console.warn("Dropped malformed JSON frame");
+            return;
+        }
+
         if (message.type === INIT_GAME) {
             if (this.pendingUser === socket) {
                 console.log("Ignoring init_game: socket is already waiting");
