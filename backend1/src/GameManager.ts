@@ -68,16 +68,20 @@ export class GameManager{
                 this.pendingUser = socket;
             }
         }
-       if(message.type === MOVE)
-       {
-        const game = this.games.find((game) => game.getPlayer1() == socket || game.getPlayer2() == socket);
-        
-        if(game) {
-            game.makeMove(socket, message.payload.move);
-        }else{
-            console.log("You are not connected to anyone")
+        if (message.type === MOVE) {
+            const game = this.games.find(
+                (g) => g.getPlayer1() === socket || g.getPlayer2() === socket
+            );
+
+            if (game) {
+                game.makeMove(socket, message.payload.move);
+                if (game.board.isGameOver()) {
+                    this.games = this.games.filter((g) => g !== game);
+                }
+            } else {
+                console.log("You are not connected to anyone");
+            }
         }
-       }
 
        if(message.type === GAME_OVER) {
         console.log("Gaem over")
